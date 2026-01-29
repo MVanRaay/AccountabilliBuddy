@@ -28,7 +28,7 @@
                 </li>
 
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/users/register}">Profile</a>
+                    <a class="nav-link" th:href="@{/profile}">Profile</a>
                 </li>
 
             </ul>
@@ -45,16 +45,17 @@
                        href="#"
                        role="button"
                        data-bs-toggle="dropdown">
-                        <span sec:authentication="name"></span>
+                        <span th:if="${currentUser != null}"
+                              th:text="${currentUser.firstName}"></span>
+
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end">
 
                         <li>
-                            <a class="dropdown-item" th:href="@{/users/register}">
-                                Profile
-                            </a>
+                            <a class="dropdown-item" th:href="@{/profile}">Profile</a>
                         </li>
+
 
                         <li><hr class="dropdown-divider"></li>
 
