@@ -31,7 +31,7 @@
             <select class="form-select" id="timeFrame" name="timeFrame" required onchange="toggleEndDate()">
                 <option value="" disabled selected>Select timeframe</option>
                 <option value="Daily">Daily</option>
-                <option value="Weely">Weekly</option>
+                <option value="Weekly">Weekly</option>
                 <option value="Bi-Weekly">Bi-Weekly</option>
                 <option value="Monthly">Monthly</option>
                 <option value="Once">Once</option>
@@ -47,7 +47,7 @@
         <!-- End date (optional unless timeframe is ONCE) -->
         <div class="mb-3">
             <label for="endDate" class="form-label">End Date</label>
-            <input type="date" class="form-control" id="endDate" name="endDate">
+            <input type="datetime-local" class="form-control" id="endDate" name="endDate">
             <div class="form-text text-muted" id="endDateHelp">Optional unless timeframe is "Once".</div>
         </div>
 

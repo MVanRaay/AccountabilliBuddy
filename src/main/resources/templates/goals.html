@@ -55,6 +55,7 @@
     <div class="mb-3"></div>
 
     <div class="list-group">
+
         <div class="list-group-item goal-card p-3 m-0"
              th:each="goal : ${goals}">
 
@@ -78,6 +79,7 @@
                                        th:value="${i}"
                                        th:checked="${goal.goalCompletion.completed >= i}"
                                        onchange="handleToggle(this)" />
+
                             </div>
                         </div>
                     </th:block>
