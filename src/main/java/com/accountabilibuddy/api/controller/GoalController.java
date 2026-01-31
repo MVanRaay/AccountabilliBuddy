@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/goals")
@@ -20,12 +22,24 @@ public class GoalController {
     public String listGoals(Model model, Principal principal) {
         model.addAttribute("goals", _service.getAllGoalsByUserId(principal));
         model.addAttribute("numbers", List.of(0, 1, 2, 3));
+        Map<String, String> timeFrameDict = Map.of(
+                "Daily", "Day",
+                "Weekly", "Week",
+                "Bi-Weekly", "Two Weeks",
+                "Monthly", "Month",
+                "Once", "Once"
+        );
+        model.addAttribute("timeframeDict", timeFrameDict);
         return "goals";
     }
 
-    @PostMapping("/{goalId}/complete")
-    public String updateGoalCompletion(@PathVariable Long goalId) {
-        _service.completeOnce(goalId);
+    @PutMapping("/{goalId}/complete")
+    public String updateGoalCompletion(
+            @PathVariable Long goalId,
+            @RequestParam int completed,
+            @RequestParam Boolean checked,
+            Principal principal) {
+        _service.updateCompletion(goalId, completed, checked, principal);
         return "redirect:/goals";
     }
 

@@ -11,6 +11,30 @@
         .goal-title { font-weight: 600; font-size: 1.1rem; }
         .completion-count { font-weight: 500; font-size: 0.9rem; }
         button.checkbox-submit { display: none; }
+        .goal-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            column-gap: 0.75rem;
+            align-items: center;
+        }
+
+        .goal-title {
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.2;
+        }
+
+        .goal-meta {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .goal-frequency {
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
     </style>
 </head>
 <body>
@@ -28,43 +52,84 @@
         <a class="btn btn-primary" th:href="@{/goals/new}">Set a New Goal</a>
     </div>
 
+    <div class="mb-3"></div>
+
     <div class="list-group">
-        <div class="list-group-item goal-card" th:each="goal : ${goals}">
-            <form th:action="@{'/goals/' + ${goal.id} + '/complete'}" method="post">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="goal-title" th:text="${goal.title}">Goal Title</div>
-                        <div class="text-muted small" th:text="${#dates.format(goal.endDate, 'MMM dd, yyyy')}">End Date</div>
-                    </div>
-                    <div class="checkbox-group d-flex align-items-center" th:switch="${goal.completionsPerTimeFrame}">
+        <div class="list-group-item goal-card p-3 m-0"
+             th:each="goal : ${goals}">
 
-                        <!-- 3 or fewer completions: multiple checkboxes -->
-                        <template th:case="${numbers}">
-                            <div th:each="i : ${#numbers.sequence(1, goal.completionsPerTimeFrame)}" class="form-check me-1">
-                                <input class="form-check-input" type="checkbox" name="completed"
-                                       th:value="${i}" th:checked="${goal.goalCompletion.completed >= i}"
-                                       onchange="this.form.submit()" />
-                            </div>
-                        </template>
+            <div class="goal-row">
 
-                        <!-- More than 3 completions: single checkbox with count -->
-                        <template th:case="*">
-                            <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" type="checkbox" name="completed"
-                                       th:value="${goal.completionsPerTimeFrame}"
-                                       th:checked="${goal.goalCompletion.completed >= goal.completionsPerTimeFrame}"
-                                       onchange="this.form.submit()" />
-                                <label class="form-check-label completion-count ms-1"
-                                       th:text="${goal.goalCompletion.completed} + '/' + goal.completionsPerTimeFrame"></label>
+                <!-- CHECKBOX COLUMN -->
+                <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                      method="post"
+                      onclick="event.stopPropagation()">
+
+                    <input type="hidden" name="checked" value="true"/>
+                    <input type="hidden" name="_method" value="PUT"/>
+
+                    <th:block th:if="${goal.completionsPerTimeFrame <= 3}">
+                        <div class="d-flex">
+                            <div th:each="i : ${#numbers.sequence(1, goal.completionsPerTimeFrame)}"
+                                 class="form-check me-1">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="completed"
+                                       th:value="${i}"
+                                       th:checked="${goal.goalCompletion.completed >= i}"
+                                       onchange="handleToggle(this)" />
                             </div>
-                        </template>
+                        </div>
+                    </th:block>
+
+                    <th:block th:if="${goal.completionsPerTimeFrame > 3}">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="completed"
+                                   th:value="${goal.completionsPerTimeFrame}"
+                                   th:checked="${goal.goalCompletion.completed >= goal.completionsPerTimeFrame}"
+                                   onchange="handleToggle(this)" />
+                        </div>
+                    </th:block>
+
+                </form>
+
+                <!-- CLICKABLE CONTENT COLUMN -->
+                <a th:href="@{'/goals/' + ${goal.id}}"
+                   class="text-decoration-none text-dark d-block">
+
+                    <div class="goal-title"
+                         th:text="${goal.title}">
                     </div>
+
+                    <div class="goal-meta"
+                         th:text="${#dates.format(goal.endDate, 'MMM dd, yyyy')}">
+                    </div>
+                </a>
+
+                <!-- FREQUENCY COLUMN -->
+                <div class="goal-frequency text-end"
+                     th:text="${goal.completionsPerTimeFrame} + 'x / ' + ${timeframeDict[goal.timeFrame]}">
                 </div>
-            </form>
+
+            </div>
         </div>
     </div>
+
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function handleToggle(checkbox) {
+        const form = checkbox.form;
+        const checkedField = form.querySelector('input[name="checked"]');
+        checkedField.value = checkbox.checked ? "true" : "false";
+        form.submit();
+    }
+</script>
+
 </body>
 </html>
