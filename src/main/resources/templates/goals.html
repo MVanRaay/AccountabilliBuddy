@@ -6,11 +6,29 @@
     <title>Goal Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .goal-card { margin-bottom: 1rem; }
-        .checkbox-group input[type="checkbox"] { margin-right: 0.5rem; cursor: pointer; }
-        .goal-title { font-weight: 600; font-size: 1.1rem; }
-        .completion-count { font-weight: 500; font-size: 0.9rem; }
-        button.checkbox-submit { display: none; }
+        .goal-card {
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        .goal-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .completion-count {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        button.checkbox-submit {
+            display: none;
+        }
+
         .goal-row {
             display: grid;
             grid-template-columns: auto 1fr auto;
@@ -78,7 +96,7 @@
                                        name="completed"
                                        th:value="${i}"
                                        th:checked="${goal.goalCompletion.completed >= i}"
-                                       onchange="handleToggle(this)" />
+                                       onchange="handleToggle(this)"/>
 
                             </div>
                         </div>
@@ -91,7 +109,7 @@
                                    name="completed"
                                    th:value="${goal.completionsPerTimeFrame}"
                                    th:checked="${goal.goalCompletion.completed >= goal.completionsPerTimeFrame}"
-                                   onchange="handleToggle(this)" />
+                                   onchange="handleToggle(this)"/>
                         </div>
                     </th:block>
 
@@ -106,7 +124,7 @@
                     </div>
 
                     <div class="goal-meta"
-                         th:text="${#dates.format(goal.endDate, 'MMM dd, yyyy')}">
+                         th:text="${#temporals.format(goal.endDate, 'MMM dd, yyyy')}">
                     </div>
                 </a>
 
