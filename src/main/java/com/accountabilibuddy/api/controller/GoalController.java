@@ -54,4 +54,13 @@ public class GoalController {
         _service.saveNewGoal(goal, principal);
         return "redirect:/goals";
     }
+
+    @GetMapping("/{goalId}")
+    public String viewGoal(@PathVariable Long goalId, Model model, Principal principal) {
+        Goal goal = _service.getGoalById(goalId);
+        if (goal == null) return "redirect:/goals";
+        model.addAttribute("goal", goal);
+
+        return "viewGoal";
+    }
 }
