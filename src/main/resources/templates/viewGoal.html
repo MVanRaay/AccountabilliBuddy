@@ -113,8 +113,9 @@
             <a th:href="@{/goals}" class="btn btn-outline-secondary">
                 Cancel
             </a>
-        </div>
 
+            <a class="btn btn-danger" th:href="@{'/goals/' + ${goal.id} + '/delete'}">Delete Goal</a>
+        </div>
     </form>
 </div>
 
