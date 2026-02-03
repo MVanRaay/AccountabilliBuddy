@@ -37,9 +37,8 @@ public class GoalController {
     public String updateGoalCompletion(
             @PathVariable Long goalId,
             @RequestParam int completed,
-            @RequestParam Boolean checked,
             Principal principal) {
-        _service.updateCompletion(goalId, completed, checked, principal);
+        _service.updateCompletion(goalId, completed, principal);
         return "redirect:/goals";
     }
 
