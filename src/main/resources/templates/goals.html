@@ -133,8 +133,9 @@
                          th:text="${goal.title}">
                     </div>
 
-                    <div class="goal-meta" th:if="${goal.getEndDate() != null}"
-                         th:text="${#dates.format(goal.endDate, 'MMM dd, yyyy')}">
+                    <div class="goal-meta"
+                         th:if="${goal.getEndDate() != null}"
+                         th:text="${#temporals.format(goal.endDate, 'MMM dd, yyyy')}">
                     </div>
                 </a>
 

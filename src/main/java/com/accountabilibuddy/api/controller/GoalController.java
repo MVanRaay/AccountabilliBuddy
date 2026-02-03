@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,18 @@ public class GoalController {
     }
 
     @PostMapping("/new")
-    public String addGoal(@ModelAttribute Goal goal, Principal principal) {
+    public String addGoal(
+            @ModelAttribute Goal goal,
+            @RequestParam(value = "endDateRaw", required = false) String endDateRaw,
+            Principal principal) {
+
+        if (endDateRaw != null && !endDateRaw.isBlank()) {
+            LocalDate date = LocalDate.parse(endDateRaw);
+            goal.setEndDate(date.atTime(23, 59, 59));
+        } else {
+            goal.setEndDate(null);
+        }
+
         _service.saveNewGoal(goal, principal);
         return "redirect:/goals";
     }
