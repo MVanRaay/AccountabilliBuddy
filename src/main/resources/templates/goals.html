@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -62,40 +62,68 @@
             <div class="goal-row">
 
                 <!-- CHECKBOX COLUMN -->
-                <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
-                      method="post"
-                      onclick="event.stopPropagation()">
 
-                    <input type="hidden" name="checked" value="true"/>
-                    <input type="hidden" name="_method" value="PUT"/>
 
-                    <th:block th:if="${goal.completionsPerTimeFrame <= 3}">
-                        <div class="d-flex">
-                            <div th:each="i : ${#numbers.sequence(1, goal.completionsPerTimeFrame)}"
-                                 class="form-check me-1">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       name="completed"
-                                       th:value="${i}"
-                                       th:checked="${goal.goalCompletion.completed >= i}"
-                                       onchange="handleToggle(this)" />
+                <th:block th:if="${goal.completionsPerTimeFrame <= 3}">
+                    <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                          method="post">
 
+                        <input type="hidden" name="completed" value="0" />
+                        <input type="hidden" name="_method" value="PUT"/>
+                            <div class="d-flex">
+                                <div th:each="i : ${#numbers.sequence(1, goal.completionsPerTimeFrame)}"
+                                     class="form-check me-1">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="completed"
+                                           th:value="${i}"
+                                           th:checked="${goal.goalCompletion.completed >= i}"
+                                           th:disabled="${i < goal.goalCompletion.completed}"
+                                           onchange="handleToggle(this)" />
+                                </div>
                             </div>
-                        </div>
-                    </th:block>
+                    </form>
+                </th:block>
 
-                    <th:block th:if="${goal.completionsPerTimeFrame > 3}">
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   name="completed"
-                                   th:value="${goal.completionsPerTimeFrame}"
-                                   th:checked="${goal.goalCompletion.completed >= goal.completionsPerTimeFrame}"
-                                   onchange="handleToggle(this)" />
-                        </div>
-                    </th:block>
+                <th:block th:if="${goal.completionsPerTimeFrame > 3}">
+                    <div class="completion-stepper d-flex align-items-center gap-2">
 
-                </form>
+                        <!-- Decrement -->
+                        <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                              method="post">
+                            <input type="hidden" name="_method" value="put"/>
+                            <input type="hidden" name="completed"
+                                   th:value="${goal.goalCompletion.completed - 1}"/>
+                            <button type="submit"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    th:disabled="${goal.goalCompletion.completed == 0}">
+                                −
+                            </button>
+                        </form>
+
+                        <!-- Display -->
+                        <span class="fw-semibold">
+                            <span th:text="${goal.goalCompletion.completed}"></span>
+                            /
+                            <span th:text="${goal.completionsPerTimeFrame}"></span>
+                        </span>
+
+                        <!-- Increment -->
+                        <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                              method="post">
+                            <input type="hidden" name="_method" value="put"/>
+                            <input type="hidden" name="completed"
+                                   th:value="${goal.goalCompletion.completed + 1}"/>
+                            <button type="submit"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    th:disabled="${goal.goalCompletion.completed == goal.completionsPerTimeFrame}">
+                                +
+                            </button>
+                        </form>
+
+                    </div>
+
+                </th:block>
 
                 <!-- CLICKABLE CONTENT COLUMN -->
                 <a th:href="@{'/goals/' + ${goal.id}}"
@@ -106,7 +134,8 @@
                     </div>
 
                     <div class="goal-meta"
-                         th:text="${#dates.format(goal.endDate, 'MMM dd, yyyy')}">
+                         th:if="${goal.getEndDate() != null}"
+                         th:text="${#temporals.format(goal.endDate, 'MMM dd, yyyy')}">
                     </div>
                 </a>
 
@@ -127,8 +156,15 @@
 <script>
     function handleToggle(checkbox) {
         const form = checkbox.form;
-        const checkedField = form.querySelector('input[name="checked"]');
-        checkedField.value = checkbox.checked ? "true" : "false";
+        const completedField = form.querySelector('input[name="completed"]');
+        const clickedValue = parseInt(checkbox.value, 10);
+
+        if (checkbox.checked) {
+            completedField.value = clickedValue;
+        } else {
+            completedField.value = clickedValue - 1;
+        }
+
         form.submit();
     }
 </script>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +47,7 @@
         <!-- End date (optional unless timeframe is ONCE) -->
         <div class="mb-3">
             <label for="endDate" class="form-label">End Date</label>
-            <input type="datetime-local" class="form-control" id="endDate" name="endDate">
+            <input type="date" class="form-control" id="endDate" name="endDateRaw">
             <div class="form-text text-muted" id="endDateHelp">Optional unless timeframe is "Once".</div>
         </div>
 
@@ -61,7 +61,7 @@
         const endDateInput = document.getElementById('endDate');
         const helpText = document.getElementById('endDateHelp');
 
-        if (timeframe === 'ONCE') {
+        if (timeframe === 'Once') {
             endDateInput.required = true;
             helpText.textContent = 'End date is required for one-time goals.';
         } else {
