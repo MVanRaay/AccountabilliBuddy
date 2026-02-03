@@ -66,4 +66,25 @@ public class GoalController {
         _service.saveNewGoal(goal, principal);
         return "redirect:/goals";
     }
+
+    @GetMapping("/{goalId}")
+    public String viewGoal(@PathVariable Long goalId, Model model) {
+        Goal goal = _service.getGoalById(goalId);
+        if (goal == null) return "redirect:/goals";
+        model.addAttribute("goal", goal);
+
+        return "viewGoal";
+    }
+
+    @PostMapping("/{goalId}")
+    public String updateGoal(@PathVariable Long goalId, @ModelAttribute Goal updatedGoal) {
+        _service.updateGoal(goalId, updatedGoal);
+        return "redirect:/goals";
+    }
+
+    @GetMapping("/{goalId}/delete")
+    public String deleteGoal(@PathVariable Long goalId) {
+        _service.deleteGoalById(goalId);
+        return "redirect:/goals";
+    }
 }

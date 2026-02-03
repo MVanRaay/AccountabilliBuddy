@@ -21,6 +21,6 @@ spring:
               - openid
               - profile
               - email
-#  jpa:
-#    hibernate:
-#      ddl-auto: create
+  jpa:
+    hibernate:
+      ddl-auto: update
