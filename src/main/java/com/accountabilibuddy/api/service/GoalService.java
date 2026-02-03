@@ -63,45 +63,26 @@ public class GoalService {
 
     public void updateCompletion(
             Long goalId,
-            int completed,
-            Boolean checked,
+            int target,
             Principal principal) {
         Long userId = _userService.getCurrentUserId(principal);
         Goal goal = _repo.findById(goalId).orElseThrow();
 
+        // Ensure goal belongs to user
         if (!goal.getUserId().equals(userId)) {
             return;
         }
 
+        int max = goal.getCompletionsPerTimeFrame();
+        int newValue = Math.max(0, Math.min(target, max));
+
         GoalCompletion completion = _goalCompletionService.findByGoalId(goalId);
 
-        if (completed == completion.getCompleted()) {
-            return;
+        if (completion.getCompleted() != newValue) {
+            completion.setCompleted(newValue);
+            _goalCompletionService.save(completion);
         }
-
-        if (checked) {
-            if (completed > goal.getCompletionsPerTimeFrame()) {
-                completed = goal.getCompletionsPerTimeFrame();
-            } else if (completed <= completion.getCompleted()) {
-                completed = completion.getCompleted() + 1;
-            }
-        } else {
-            if (completed >= completion.getCompleted()) {
-                completed = completion.getCompleted() - 1;
-            }
-            else if (completed < 0) {
-                completed = 0;
-            }
-        }
-        completion.setCompleted(completed);
-        _goalCompletionService.save(completion);
     }
-
-//    public void completeOnce(Long goalId) {
-//        GoalCompletion goalCompletion = _goalCompletionService.findByGoalId(goalId);
-//        goalCompletion.setCompleted(goalCompletion.getCompleted() + 1);
-//        _goalCompletionService.save(goalCompletion);
-//    }
 
     private LocalDateTime calculateTimeFrameEndDate(Goal goal) {
         String timeFrame = goal.getTimeFrame();
