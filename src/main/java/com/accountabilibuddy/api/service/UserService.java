@@ -1,5 +1,6 @@
 package com.accountabilibuddy.api.service;
 
+import com.accountabilibuddy.api.dto.UserSearchDto;
 import com.accountabilibuddy.api.model.User;
 import com.accountabilibuddy.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,9 @@ public class UserService {
 
     public void deleteCurrentUser(Principal principal) {
         _repo.deleteById(getCurrentUserId(principal));
+    }
+
+    public List<UserSearchDto> searchUsers(Long currentUserId, String searchTerm) {
+        return _repo.searchUsers(searchTerm, currentUserId);
     }
 }
