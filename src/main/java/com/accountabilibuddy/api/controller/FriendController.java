@@ -1,12 +1,14 @@
 package com.accountabilibuddy.api.controller;
 
-import ch.qos.logback.core.model.Model;
+import com.accountabilibuddy.api.dto.UserSearchDto;
 import com.accountabilibuddy.api.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/friends")
@@ -18,6 +20,24 @@ public class FriendController {
     public String getMyFriends(Model model, Principal principal) {
         // TODO: Retrieve user's friends
         return "friends"; // TODO: Create friends page
+    }
+
+    @GetMapping("/find")
+    public String findFriends() {
+        return "searchFriends";
+    }
+
+    @GetMapping("/search")
+    @ResponseBody
+    public List<UserSearchDto> searchFriends(
+            @RequestParam String searchTerm,
+            Principal principal) {
+
+        if (searchTerm == null || searchTerm.isBlank()) {
+            return List.of();
+        }
+
+        return _service.searchUsers(principal, searchTerm);
     }
 
     @PostMapping
