@@ -31,10 +31,10 @@ public class UserService {
         return _repo.findUserById(id);
     }
 
-    public User saveNewUser(User formUser, Principal principal) {
+    public User saveNewUser(String firstName, String lastName, Principal principal) {
         User user = _repo.findByGoogleId(principal.getName()).orElseThrow();
-        user.setFirstName(formUser.getFirstName());
-        user.setLastName(formUser.getLastName());
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setRegisteredOn(LocalDateTime.now());
         user.setProfileComplete(true);
         return _repo.save(user);

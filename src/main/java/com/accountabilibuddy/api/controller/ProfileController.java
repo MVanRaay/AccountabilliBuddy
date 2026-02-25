@@ -37,6 +37,11 @@ public class ProfileController {
                                 RedirectAttributes redirectAttributes,
                                 Authentication authentication) {
 
+        if (firstName.isBlank() || lastName.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Fields cannot be empty or blank");
+            return "redirect:/profile";
+        }
+
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
 
