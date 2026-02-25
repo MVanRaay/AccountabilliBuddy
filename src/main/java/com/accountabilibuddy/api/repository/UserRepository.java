@@ -26,6 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                AND u.id <> :currentUserId
            OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
                AND u.id <> :currentUserId
+           OR LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+               AND u.id <> :currentUserId
            OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
                AND u.id <> :currentUserId
     """)
