@@ -84,13 +84,22 @@
             </div>
             <ul class="mb-0" th:if="${!#lists.isEmpty(friendGoals[friend.id])}">
                 <li th:each="goal : ${friendGoals[friend.id]}">
-                    <span th:text="${goal.title}">Goal title</span>
-                    <span class="text-muted small">
-                        (
-                        <span th:text="${goal.timeFrame}">Timeframe</span>,
-                        <span th:text="${goal.completionsPerTimeFrame}"></span>x per timeframe
-                        )
-                    </span>
+                    <div>
+                        <span th:text="${goal.title}">Goal title</span>
+                        <span class="text-muted small">
+                            (
+                            <span th:text="${goal.timeFrame}">Timeframe</span>,
+                            <span th:text="${goal.completionsPerTimeFrame}"></span>x per timeframe
+                            )
+                        </span>
+                    </div>
+                    <div class="text-muted small">
+                        Progress:
+                        <span th:text="${goal.goalCompletion != null ? goal.goalCompletion.completed : 0}"></span>
+                        /
+                        <span th:text="${goal.completionsPerTimeFrame}"></span>
+                        this period
+                    </div>
                 </li>
             </ul>
         </div>
