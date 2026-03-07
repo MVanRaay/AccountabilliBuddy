@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,9 +22,33 @@ public class FriendService {
     }
 
     public Friend addFriend(Principal principal, Long friendId) {
+        Long currentUserId = _userService.getCurrentUserId(principal);
+
+        Long first = Math.min(currentUserId, friendId);
+        Long second = Math.max(currentUserId, friendId);
+
+        if (_repo.existsByFriendOneIdAndFriendTwoId(first, second)) {
+            return null;
+        }
+
         Friend friend = new Friend();
-        friend.setFriendOneId(_userService.getCurrentUserId(principal));
-        friend.setFriendTwoId(friendId);
+        friend.setFriendOneId(first);
+        friend.setFriendTwoId(second);
         return _repo.save(friend);
+    }
+
+    public List<User> getFriendsForCurrentUser(Principal principal) {
+        Long currentUserId = _userService.getCurrentUserId(principal);
+        List<Friend> friendships = _repo.findByFriendOneIdOrFriendTwoId(currentUserId, currentUserId);
+
+        List<User> friends = new ArrayList<>();
+        for (Friend friendship : friendships) {
+            Long otherUserId = friendship.getFriendOneId().equals(currentUserId)
+                    ? friendship.getFriendTwoId()
+                    : friendship.getFriendOneId();
+            friends.add(_userService.getById(otherUserId));
+        }
+
+        return friends;
     }
 }

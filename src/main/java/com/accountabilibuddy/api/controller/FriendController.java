@@ -18,8 +18,8 @@ public class FriendController {
 
     @GetMapping
     public String getMyFriends(Model model, Principal principal) {
-        // TODO: Retrieve user's friends
-        return "friends"; // TODO: Create friends page
+        model.addAttribute("friends", _service.getFriendsForCurrentUser(principal));
+        return "friends";
     }
 
     @GetMapping("/find")
