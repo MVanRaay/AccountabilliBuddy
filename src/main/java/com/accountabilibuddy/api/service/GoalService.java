@@ -25,6 +25,14 @@ public class GoalService {
         return goals;
     }
 
+    public List<Goal> getGoalsForUser(Long userId) {
+        List<Goal> goals = _repo.findGoalsByUserId(userId);
+        goals.forEach(goal -> {
+            goal.setGoalCompletion(_goalCompletionService.findByGoalId(goal.getId()));
+        });
+        return goals;
+    }
+
     public Goal getGoalById(Long goalId) {
         Goal goal = _repo.findById(goalId).orElseThrow();
         goal.setGoalCompletion(_goalCompletionService.findByGoalId(goalId));

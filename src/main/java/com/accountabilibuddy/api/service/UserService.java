@@ -27,8 +27,13 @@ public class UserService {
         return _repo.findAll();
     }
 
-    public User getUserById(Long id) {
+    public User getById(Long id) {
         return _repo.findUserById(id);
+    }
+
+    // Backwards-compatible alias for existing callers
+    public User getUserById(Long id) {
+        return getById(id);
     }
 
     public User saveNewUser(String firstName, String lastName, Principal principal) {
