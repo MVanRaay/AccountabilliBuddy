@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+<<<<<<< rdooley/friends-view
 import java.util.ArrayList;
+=======
+>>>>>>> main
 import java.util.List;
 
 @Service
@@ -22,6 +25,7 @@ public class FriendService {
     }
 
     public Friend addFriend(Principal principal, Long friendId) {
+<<<<<<< rdooley/friends-view
         Long currentUserId = _userService.getCurrentUserId(principal);
 
         Long first = Math.min(currentUserId, friendId);
@@ -50,5 +54,11 @@ public class FriendService {
         }
 
         return friends;
+=======
+        Friend friend = new Friend();
+        friend.setFriendOneId(_userService.getCurrentUserId(principal));
+        friend.setFriendTwoId(friendId);
+        return _repo.save(friend);
+>>>>>>> main
     }
 }
