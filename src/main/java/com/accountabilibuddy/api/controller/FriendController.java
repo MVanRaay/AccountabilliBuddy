@@ -59,4 +59,10 @@ public class FriendController {
         _service.addFriend(principal, friendId);
         return "redirect:/friends";
     }
+
+    @DeleteMapping
+    public String deleteFriend(Principal principal, @RequestParam Long friendId){
+        _service.deleteFriend(principal, friendId);
+        return "redirect:/friends";
+    }
 }

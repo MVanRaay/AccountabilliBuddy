@@ -36,7 +36,7 @@
 </head>
 <body>
 
-<div th:replace="fragments/navbar :: navbar"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="container py-3 mt-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -72,6 +72,12 @@
                      th:text="${friend.email}">
                     friend@example.com
                 </div>
+            </div>
+            <div class="ms-auto">
+                <form th:action="@{/friends}" th:method="delete">
+                    <input type="hidden" th:value="${friend.id}" name="friendId">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
             </div>
         </button>
         <!-- Hidden per-friend goals content -->

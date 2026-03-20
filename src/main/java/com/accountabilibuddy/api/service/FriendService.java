@@ -51,4 +51,17 @@ public class FriendService {
 
         return friends;
     }
+
+    public void deleteFriend(Principal principal, Long friendId) {
+        Long currentUserId = _userService.getCurrentUserId(principal);
+
+        Long  first = Math.min(currentUserId, friendId);
+        Long second = Math.max(currentUserId, friendId);
+
+        Friend friendship;
+        if (_repo.existsByFriendOneIdAndFriendTwoId(first, second)) {
+            friendship = _repo.findByFriendOneIdAndFriendTwoId(first, second);
+            _repo.delete(friendship);
+        }
+    }
 }
