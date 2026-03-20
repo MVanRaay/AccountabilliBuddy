@@ -77,8 +77,19 @@ public class GoalController {
     }
 
     @PostMapping("/{goalId}")
-    public String updateGoal(@PathVariable Long goalId, @ModelAttribute Goal updatedGoal) {
-        _service.updateGoal(goalId, updatedGoal);
+    public String updateGoal(@PathVariable Long goalId,
+                             @ModelAttribute Goal updatedGoal,
+                             @RequestParam(value = "endDateRaw", required = false) String endDateRaw,
+                             Principal principal) {
+
+        if (endDateRaw != null && !endDateRaw.isBlank()) {
+            LocalDate date = LocalDate.parse(endDateRaw);
+            updatedGoal.setEndDate(date.atTime(23, 59, 59));
+        } else {
+            updatedGoal.setEndDate(null);
+        }
+
+        _service.updateGoal(goalId, updatedGoal, principal);
         return "redirect:/goals";
     }
 
