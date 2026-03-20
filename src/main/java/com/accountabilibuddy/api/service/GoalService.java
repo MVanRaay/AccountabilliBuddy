@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -53,8 +54,14 @@ public class GoalService {
         return _repo.save(goal);
     }
 
-    public Goal updateGoal(Long id, Goal newGoal) {
+    public Goal updateGoal(Long id, Goal newGoal, Principal principal) {
+        Long userId = _userService.getCurrentUserId(principal);
         Goal goal = _repo.findById(id).orElseThrow();
+
+        if (!goal.getUserId().equals(userId)) {
+            return goal;
+        }
+
         goal.setTitle(newGoal.getTitle());
         goal.setTimeFrame(newGoal.getTimeFrame());
         goal.setCompletionsPerTimeFrame(newGoal.getCompletionsPerTimeFrame());
