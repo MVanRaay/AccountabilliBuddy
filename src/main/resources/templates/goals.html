@@ -3,162 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Goal Tracker</title>
+    <title>My Goals</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .goal-card { margin-bottom: 1rem; }
-        .checkbox-group input[type="checkbox"] { margin-right: 0.5rem; cursor: pointer; }
-        .goal-title { font-weight: 600; font-size: 1.1rem; }
-        .completion-count { font-weight: 500; font-size: 0.9rem; }
-        button.checkbox-submit { display: none; }
-        .goal-row {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            column-gap: 0.75rem;
-            align-items: center;
-        }
-
-        .goal-row a {
-            margin-top: -0.75rem;
-            margin-bottom: -0.75rem;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-        }
-
-        .goal-title {
-            font-weight: 600;
-            font-size: 1rem;
-            line-height: 1.2;
-        }
-
-        .goal-meta {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-
-        .goal-frequency {
-            font-size: 0.85rem;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .form-check-input {
-            border-color: #6c757d;
-            border-width: 2px;
-            width: 1.1em;
-            height: 1.1em;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container py-3 mt-5">
-    <h2 class="mb-3">My Goals</h2>
+<main class="container py-4 ab-page-wide px-3 px-md-4">
 
-    <div th:if="${#lists.isEmpty(goals)}">
-        <p>No goals found.</p>
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="ab-title mb-1">My goals</h1>
+            <p class="ab-subtitle mb-0">Track habits and open a goal to edit details.</p>
+        </div>
+        <a class="btn btn-ab-primary text-white" th:href="@{/goals/new}">New goal</a>
     </div>
 
-    <div>
-        <a class="btn btn-primary" th:href="@{/goals/new}">Set a New Goal</a>
+    <div th:if="${#lists.isEmpty(goals)}" class="ab-empty mb-4">
+        <p class="mb-3 fw-medium text-secondary">No goals yet</p>
+        <p class="small mb-0">Create your first goal to start building streaks with your buddies.</p>
     </div>
 
-    <div class="mb-3"></div>
+    <div class="vstack gap-3" th:if="${!#lists.isEmpty(goals)}">
 
-    <div class="list-group">
-
-        <div class="list-group-item goal-card p-3 m-0"
+        <div class="card ab-card ab-goal-card interactive border-0"
              th:each="goal : ${goals}">
 
-            <div class="goal-row">
+            <div class="card-body">
+                <div class="row g-3 align-items-center">
 
-                <!-- CHECKBOX COLUMN -->
-                <th:block th:if="${goal.completionsPerTimeFrame == 1}">
-                    <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
-                          th:method="put">
+                    <div class="col-auto">
+                        <th:block th:if="${goal.completionsPerTimeFrame == 1}">
+                            <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                                  th:method="put">
 
-                        <input type="hidden" name="completed" value="0" />
-                        <div class="d-flex">
-                            <div th:each="i : ${#numbers.sequence(1, goal.completionsPerTimeFrame)}"
-                                 class="form-check me-1">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       name="completed"
-                                       th:value="${i}"
-                                       th:checked="${goal.goalCompletion.completed >= i}"
-                                       th:disabled="${i < goal.goalCompletion.completed}"
-                                       onchange="handleToggle(this)" />
+                                <input type="hidden" name="completed" value="0"/>
+                                <div class="d-flex gap-1">
+                                    <div th:each="i : ${#numbers.sequence(1, goal.completionsPerTimeFrame)}"
+                                         class="form-check mb-0">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="completed"
+                                               th:value="${i}"
+                                               th:checked="${goal.goalCompletion.completed >= i}"
+                                               th:disabled="${i < goal.goalCompletion.completed}"
+                                               onchange="handleToggle(this)"/>
+                                    </div>
+                                </div>
+                            </form>
+                        </th:block>
+
+                        <th:block th:if="${goal.completionsPerTimeFrame > 1}">
+                            <div class="completion-stepper ab-stepper d-flex align-items-center gap-2">
+
+                                <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                                      th:method="put" class="m-0">
+                                    <input type="hidden" name="completed"
+                                           th:value="${goal.goalCompletion.completed - 1}"/>
+                                    <button type="submit"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            th:disabled="${goal.goalCompletion.completed == 0}">
+                                        −
+                                    </button>
+                                </form>
+
+                                <span class="fw-semibold small text-secondary">
+                                    <span th:text="${goal.goalCompletion.completed}"></span>
+                                    /
+                                    <span th:text="${goal.completionsPerTimeFrame}"></span>
+                                </span>
+
+                                <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
+                                      th:method="put" class="m-0">
+                                    <input type="hidden" name="completed"
+                                           th:value="${goal.goalCompletion.completed + 1}"/>
+                                    <button type="submit"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            th:disabled="${goal.goalCompletion.completed == goal.completionsPerTimeFrame}">
+                                        +
+                                    </button>
+                                </form>
+
                             </div>
-                        </div>
-                    </form>
-                </th:block>
+                        </th:block>
+                    </div>
 
-                <th:block th:if="${goal.completionsPerTimeFrame > 1}">
-                    <div class="completion-stepper d-flex align-items-center gap-2">
+                    <div class="col min-w-0">
+                        <a th:href="@{'/goals/' + ${goal.id}}"
+                           class="ab-goal-link text-decoration-none d-block py-1 px-2 mx-n2">
+                            <div class="ab-goal-title"
+                                 th:text="${goal.title}">
+                            </div>
+                            <div class="ab-goal-meta"
+                                 th:if="${goal.getEndDate() != null}"
+                                 th:text="${#temporals.format(goal.endDate, 'MMM d, yyyy')}">
+                            </div>
+                        </a>
+                    </div>
 
-                        <!-- Decrement -->
-                        <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
-                              th:method="put">
-                            <input type="hidden" name="completed"
-                                   th:value="${goal.goalCompletion.completed - 1}"/>
-                            <button type="submit"
-                                    class="btn btn-outline-secondary btn-sm"
-                                    th:disabled="${goal.goalCompletion.completed == 0}">
-                                −
-                            </button>
-                        </form>
-
-                        <!-- Display -->
-                        <span class="fw-semibold">
-                            <span th:text="${goal.goalCompletion.completed}"></span>
-                            /
-                            <span th:text="${goal.completionsPerTimeFrame}"></span>
+                    <div class="col-auto text-end">
+                        <span class="ab-badge-soft"
+                              th:text="${goal.completionsPerTimeFrame} + '× / ' + ${timeframeDict[goal.timeFrame]}">
                         </span>
-
-                        <!-- Increment -->
-                        <form th:action="@{'/goals/' + ${goal.id} + '/complete'}"
-                              th:method="put">
-                            <input type="hidden" name="completed"
-                                   th:value="${goal.goalCompletion.completed + 1}"/>
-                            <button type="submit"
-                                    class="btn btn-outline-secondary btn-sm"
-                                    th:disabled="${goal.goalCompletion.completed == goal.completionsPerTimeFrame}">
-                                +
-                            </button>
-                        </form>
-
                     </div>
 
-                </th:block>
-
-                <!-- CLICKABLE CONTENT COLUMN -->
-                <a th:href="@{'/goals/' + ${goal.id}}"
-                   class="text-decoration-none text-dark d-flex align-items-center align-self-stretch">
-                    <div>
-                        <div class="goal-title"
-                             th:text="${goal.title}">
-                        </div>
-
-                        <div class="goal-meta"
-                             th:if="${goal.getEndDate() != null}"
-                             th:text="${#temporals.format(goal.endDate, 'MMM dd, yyyy')}">
-                        </div>
-                    </div>
-                </a>
-
-                <!-- FREQUENCY COLUMN -->
-                <div class="goal-frequency text-end"
-                     th:text="${goal.completionsPerTimeFrame} + 'x / ' + ${timeframeDict[goal.timeFrame]}">
                 </div>
-
             </div>
         </div>
+
     </div>
 
-
-</div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

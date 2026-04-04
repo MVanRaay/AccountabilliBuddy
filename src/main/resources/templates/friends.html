@@ -5,91 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Friends</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .friend-card {
-            margin-bottom: 0.75rem;
-        }
-
-        .friend-initials {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #0d6efd;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 0.75rem;
-        }
-
-        .friend-name {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .friend-email {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container py-3 mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">My Friends</h2>
-        <a class="btn btn-sm btn-outline-primary" th:href="@{/friends/find}">
+<main class="container py-4 ab-page-wide px-3 px-md-4">
+
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="ab-title mb-1">Buddies</h1>
+            <p class="ab-subtitle mb-0">People you are connected with on AccountabiliBuddy.</p>
+        </div>
+        <a class="btn btn-ab-primary text-white" th:href="@{/friends/find}">
             Find friends
         </a>
     </div>
 
-    <div th:if="${#lists.isEmpty(friends)}">
-        <p class="text-muted">No friends yet. Use the “Find friends” button to add some buddies.</p>
+    <div th:if="${#lists.isEmpty(friends)}" class="ab-empty">
+        <p class="mb-2 fw-medium text-secondary">No friends yet</p>
+        <p class="small mb-0">Search for people by name or email and send them a buddy request from the find friends page.</p>
     </div>
 
-    <div th:if="${!#lists.isEmpty(friends)}" class="list-group">
-        <button type="button"
-                class="list-group-item friend-card d-flex align-items-center text-start"
-                th:each="friend : ${friends}"
-                data-bs-toggle="modal"
-                data-bs-target="#friendDetailsModal"
-                th:attr="data-friend-name=${friend.firstName + ' ' + friend.lastName},
-                         data-friend-email=${friend.email},
-                         data-friend-id=${friend.id}">
-            <div class="friend-initials"
-                 th:text="${#strings.substring(friend.firstName, 0, 1)} + ${#strings.substring(friend.lastName, 0, 1)}">
-                AB
-            </div>
-            <div>
-                <div class="friend-name"
-                     th:text="${friend.firstName} + ' ' + ${friend.lastName}">
-                    Friend Name
-                </div>
-                <div class="friend-email"
-                     th:text="${friend.email}">
-                    friend@example.com
-                </div>
-            </div>
-            <div class="ms-auto">
-                <form th:action="@{/friends}" th:method="delete">
-                    <input type="hidden" th:value="${friend.id}" name="friendId">
-                    <input type="submit" class="btn btn-danger" value="Delete">
+    <div class="vstack gap-3" th:if="${!#lists.isEmpty(friends)}">
+
+        <div class="card ab-card border-0 interactive"
+             th:each="friend : ${friends}">
+            <div class="card-body d-flex flex-column flex-md-row align-items-md-center gap-3">
+                <button type="button"
+                        class="btn btn-link text-decoration-none text-dark text-start flex-grow-1 d-flex align-items-center gap-3 p-0 border-0 bg-transparent ab-friend-tap"
+                        data-bs-toggle="modal"
+                        data-bs-target="#friendDetailsModal"
+                        th:attr="data-friend-name=${friend.firstName + ' ' + friend.lastName},
+                                 data-friend-email=${friend.email},
+                                 data-friend-id=${friend.id}">
+                    <div class="ab-friend-avatar"
+                         th:text="${#strings.substring(friend.firstName, 0, 1)} + ${#strings.substring(friend.lastName, 0, 1)}">
+                        AB
+                    </div>
+                    <div class="min-w-0">
+                        <div class="fw-semibold text-truncate"
+                             th:text="${friend.firstName} + ' ' + ${friend.lastName}">
+                            Friend Name
+                        </div>
+                        <div class="small text-muted text-truncate"
+                             th:text="${friend.email}">
+                            friend@example.com
+                        </div>
+                    </div>
+                </button>
+                <form th:action="@{/friends}" th:method="delete" class="m-0 flex-shrink-0 align-self-stretch align-self-md-center">
+                    <input type="hidden" name="friendId" th:value="${friend.id}">
+                    <button type="submit" class="btn btn-ab-danger-outline btn-sm w-100 w-md-auto">
+                        Remove
+                    </button>
                 </form>
             </div>
-        </button>
-        <!-- Hidden per-friend goals content -->
+        </div>
+
+    </div>
+
+    <!-- Hidden per-friend goals content for modal -->
+    <th:block th:each="friend : ${friends}">
         <div class="d-none friend-goals-content"
-             th:each="friend : ${friends}"
              th:id="'friend-goals-' + ${friend.id}">
-            <p class="mb-2"><strong>Goals:</strong></p>
+            <p class="mb-2 fw-semibold">Goals</p>
             <div th:if="${#lists.isEmpty(friendGoals[friend.id])}">
-                <p class="text-muted mb-0">No goals found for this friend.</p>
+                <p class="text-muted small mb-0">No goals found for this friend.</p>
             </div>
-            <ul class="mb-0" th:if="${!#lists.isEmpty(friendGoals[friend.id])}">
-                <li th:each="goal : ${friendGoals[friend.id]}">
+            <ul class="mb-0 ps-3" th:if="${!#lists.isEmpty(friendGoals[friend.id])}">
+                <li class="mb-2" th:each="goal : ${friendGoals[friend.id]}">
                     <div>
                         <span th:text="${goal.title}">Goal title</span>
                         <span class="text-muted small">
@@ -109,25 +95,25 @@
                 </li>
             </ul>
         </div>
-    </div>
-</div>
+    </th:block>
 
-<!-- Friend details modal -->
+</main>
+
 <div class="modal fade" id="friendDetailsModal" tabindex="-1" aria-labelledby="friendDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content ab-modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="friendDetailsLabel">Friend details</h5>
+                <h5 class="modal-title fw-bold" id="friendDetailsLabel">Buddy details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-1"><strong>Name:</strong> <span id="modalFriendName"></span></p>
-                <p class="mb-2"><strong>Email:</strong> <span id="modalFriendEmail"></span></p>
-                <hr>
+                <p class="mb-1"><span class="text-muted small">Name</span><br><span class="fw-medium" id="modalFriendName"></span></p>
+                <p class="mb-3"><span class="text-muted small">Email</span><br><span id="modalFriendEmail"></span></p>
+                <hr class="text-secondary-subtle">
                 <div id="modalFriendGoals"></div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary btn-ab-outline" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -151,7 +137,7 @@
             const goalsContainer = document.getElementById('modalFriendGoals');
             if (goalsContainer) {
                 const source = friendId ? document.getElementById('friend-goals-' + friendId) : null;
-                goalsContainer.innerHTML = source ? source.innerHTML : '<p class="text-muted mb-0">No goals found for this friend.</p>';
+                goalsContainer.innerHTML = source ? source.innerHTML : '<p class="text-muted small mb-0">No goals found for this friend.</p>';
             }
         });
     }

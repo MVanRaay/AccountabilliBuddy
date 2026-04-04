@@ -2,43 +2,51 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profile</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container mt-5 pt-4">
-    <h2>My Profile</h2>
+<main class="container py-4 px-3 ab-page-narrow">
 
-    <p th:if="${success}" th:text="${success}" class="text-success"></p>
-    <p th:if="${error}" th:text="${error}" class="text-danger"></p>
-
-    <form th:action="@{/profile/update}" method="post">
-
-        <div class="mb-3">
-            <label for="first-name">First Name</label>
-            <input type="text" id="first-name" name="firstName" class="form-control" th:value="${user.firstName}" required>
+    <div class="card ab-form-card border-0">
+        <div class="card-header">
+            <h1 class="h4 mb-0 fw-bold">Profile</h1>
+            <p class="ab-subtitle small mb-0 mt-1">Update how your name appears to buddies.</p>
         </div>
+        <div class="card-body">
+            <p th:if="${success}" th:text="${success}" class="alert alert-success small py-2 mb-3"></p>
+            <p th:if="${error}" th:text="${error}" class="alert alert-danger small py-2 mb-3"></p>
 
-        <div class="mb-3">
-            <label for="last-name">Last Name</label>
-            <input type="text" id="last-name" name="lastName" class="form-control" th:value="${user.lastName}" required>
+            <form th:action="@{/profile/update}" method="post">
+
+                <div class="mb-4">
+                    <label for="first-name" class="form-label">First name</label>
+                    <input type="text" id="first-name" name="firstName" class="form-control form-control-lg"
+                           th:value="${user.firstName}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="last-name" class="form-label">Last name</label>
+                    <input type="text" id="last-name" name="lastName" class="form-control form-control-lg"
+                           th:value="${user.lastName}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control" th:value="${user.email}" disabled>
+                    <div class="form-text">Email comes from your Google account and cannot be changed here.</div>
+                </div>
+
+                <button class="btn btn-ab-primary text-white" type="submit">Save changes</button>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="email">Email</label>
-            <input type="email" id="email" class="form-control" th:value="${user.email}" disabled>
-        </div>
-
-        <div class="mb-3">
-            <button class="btn btn-primary" type="submit">Save Changes</button>
-        </div>
-
-    </form>
-</div>
+    </div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
